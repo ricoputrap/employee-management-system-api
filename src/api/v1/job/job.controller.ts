@@ -14,12 +14,19 @@ const JobAPI = (app: Express) => {
       const page: number = Number(req.query.page) || 1;
 
       const jobs: TJob[] = await service.getAllJobs();
+      const total_pages = Math.ceil(jobs.length / limit);
+
+      const start = (page - 1) * limit;
+      const end = page * limit;
+      const paginatedJobs = jobs.slice(start, end);
+
+
       return res.status(STATUS_CODE.OK).json({
-        data: jobs,
+        data: paginatedJobs,
         page,
-        total_pages: 1,
+        total_pages,
         limit,
-        total_items: 2
+        total_items: jobs.length
       });
     }
     catch (err: any) {
@@ -37,6 +44,33 @@ const JobAPI = (app: Express) => {
       return res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json(errorResponse);
     }
   })
+
+  // Add Job
+  app.post(JOB_PATH, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { title } = req.body;
+
+      const newJob: TJob = await service.addJob(title);
+
+      return res.status(STATUS_CODE.CREATED).json({
+        data: newJob
+      });
+    }
+    catch (err: any) {
+      const errorResponse = {
+        error: {
+          message: "Internal Server Error",
+          details: [
+            {
+              "message": "Unable to add job"
+            }
+          ]
+        }
+      }
+
+      return res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+  });
 }
 
 export default JobAPI;
