@@ -1,9 +1,8 @@
 import { Express, Request, Response } from "express";
+import JobAPI from "./api/v1/job/job.controller";
 
 const expressApp = (app: Express) => {
-  app.get("/", (req: Request, res: Response) => {
-    res.send("Hello World!");
-  });
+  JobAPI(app);
 
   // catch error NOT FOUND when no route matches
   app.use("*", (req: Request, res: Response) => {
