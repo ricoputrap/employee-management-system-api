@@ -20,7 +20,6 @@ const JobAPI = (app: Express) => {
       const end = page * limit;
       const paginatedJobs = jobs.slice(start, end);
 
-
       return res.status(STATUS_CODE.OK).json({
         data: paginatedJobs,
         page,
@@ -63,6 +62,55 @@ const JobAPI = (app: Express) => {
           details: [
             {
               "message": "Unable to add job"
+            }
+          ]
+        }
+      }
+
+      return res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+  });
+
+  // edit job
+  app.put(`${JOB_PATH}/:id`, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { title } = req.body;
+      const updatedJob: TJob = await service.editJob(id, title);
+      return res.status(STATUS_CODE.OK).json({
+        data: updatedJob
+      });
+    }
+    catch (err: any) {
+      const errorResponse = {
+        error: {
+          message: "Internal Server Error",
+          details: [
+            {
+              "message": "Unable to edit job"
+            }
+          ]
+        }
+      }
+
+      return res.status(STATUS_CODE.INTERNAL_SERVER_ERROR).json(errorResponse);
+    }
+  });
+
+  // delete job
+  app.delete(`${JOB_PATH}/:id`, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      await service.deleteJob(id);
+      return res.status(STATUS_CODE.NO_CONTENT).send();
+    }
+    catch (err: any) {
+      const errorResponse = {
+        error: {
+          message: "Internal Server Error",
+          details: [
+            {
+              "message": "Unable to delete job"
             }
           ]
         }
