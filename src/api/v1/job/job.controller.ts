@@ -1,27 +1,24 @@
 import { Express, Request, Response, NextFunction } from "express"
 import { JOB_PATH } from "../../../constants/api.constants"
 import { STATUS_CODE } from "../../../constants/status-code.constants"
+import JobService from "./job.service"
+import { TJob } from "./job.types"
 
 const JobAPI = (app: Express) => {
+  const service = new JobService();
   
   // Get All Jobs
   app.get(JOB_PATH, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const jobs = [
-        {
-          "id": "1029od",
-          "title": "Frontend Developer"
-        },
-        {
-          "id": "29d102",
-          "title": "Backend Developer"
-        }
-      ]
+      const limit: number = Number(req.query.limit) || 10;
+      const page: number = Number(req.query.page) || 1;
+
+      const jobs: TJob[] = await service.getAllJobs();
       return res.status(STATUS_CODE.OK).json({
         data: jobs,
-        page: 1,
+        page,
         total_pages: 1,
-        limit: 10,
+        limit,
         total_items: 2
       });
     }
