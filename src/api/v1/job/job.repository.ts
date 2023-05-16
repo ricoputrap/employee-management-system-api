@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import DbPrismaClient from "../../../database/DbPrismaClient";
 import { TJob } from "./job.types";
-import { randomUUID, UUID } from "crypto";
+import { randomUUID } from "crypto";
+import logger from "../../../config/logger";
 
 class JobRepository {
   private dbClient: PrismaClient = DbPrismaClient.getInstance();
@@ -14,6 +15,31 @@ class JobRepository {
     }
     catch (err: any) {
       throw new Error(err.message)
+    }
+  }
+
+  // get one job by id
+  public async getJobById(id: string): Promise<TJob | null> {
+    try {
+      const job: TJob | null = await this.dbClient.job.findUnique({
+        where: { id }
+      });
+      return job;
+    }
+    catch (err: any) {
+      throw new Error(err)
+    }
+  }
+
+  public async getJobByTitle(title: string): Promise<TJob | null> {
+    try {
+      const job: TJob | null = await this.dbClient.job.findFirst({
+        where: { title }
+      })
+      return job;
+    }
+    catch (err: any) {
+      throw new Error(err)
     }
   }
 
@@ -54,15 +80,16 @@ class JobRepository {
   // delete job
   public async deleteJob(id: string): Promise<TJob> {
     try {
-      const deletedJob: TJob = await this.dbClient.job.delete({
+      logger.debug("repository id: ", id);
+      return await this.dbClient.job.delete({
         where: {
           id: id
         }
       });
-      return deletedJob;
     }
     catch (err: any) {
-      throw new Error(err.message)
+      logger.error("repository deleteJob error: " + err);
+      throw new Error(err.message);
     }
   }
 }

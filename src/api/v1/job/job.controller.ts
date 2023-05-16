@@ -12,7 +12,7 @@ const JobAPI = (app: Express) => {
     try {
       const limit: number = Number(req.query.limit) || 10;
       const page: number = Number(req.query.page) || 1;
-      
+
       const { jobs, totalItems, totalPages } = await service.getPaginatedJobs(limit, page);
 
       return res.status(STATUS_CODE.OK).json({
