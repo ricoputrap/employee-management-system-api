@@ -8,11 +8,28 @@ class JobService {
     this.repository = new JobRepository();
   }
   
-  // get all jobs
-  public async getAllJobs(): Promise<TJob[]> {
-    const jobs: TJob[] = await this.repository.getAllJobs();
+  // get paginated jobs
+  public async getPaginatedJobs(
+    limit: number,
+    page: number
+  ): Promise<{
+    jobs: TJob[],
+    totalItems: number,
+    totalPages: number
+  }> {
+    try {
+      const jobs: TJob[] = await this.repository.getAllJobs();
+      const totalPages = Math.ceil(jobs.length / limit);
 
-    return jobs;
+      const start = (page - 1) * limit;
+      const end = page * limit;
+      const paginatedJobs = jobs.slice(start, end);
+
+      return { jobs: paginatedJobs, totalItems: jobs.length, totalPages };
+    }
+    catch (err: any) {
+      throw new Error(err.message)
+    }
   }
 
   // add new job
@@ -22,7 +39,7 @@ class JobService {
       return newJob;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 
@@ -33,7 +50,7 @@ class JobService {
       return updatedJob;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 
@@ -44,7 +61,7 @@ class JobService {
       return deletedJob;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 }

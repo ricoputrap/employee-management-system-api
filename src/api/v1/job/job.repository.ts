@@ -13,7 +13,7 @@ class JobRepository {
       return jobs;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 
@@ -29,7 +29,7 @@ class JobRepository {
       return newJob
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 
@@ -47,7 +47,7 @@ class JobRepository {
       return updatedJob;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 
@@ -62,7 +62,7 @@ class JobRepository {
       return deletedJob;
     }
     catch (err: any) {
-      return err;
+      throw new Error(err.message)
     }
   }
 }

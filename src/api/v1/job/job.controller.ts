@@ -12,20 +12,15 @@ const JobAPI = (app: Express) => {
     try {
       const limit: number = Number(req.query.limit) || 10;
       const page: number = Number(req.query.page) || 1;
-
-      const jobs: TJob[] = await service.getAllJobs();
-      const total_pages = Math.ceil(jobs.length / limit);
-
-      const start = (page - 1) * limit;
-      const end = page * limit;
-      const paginatedJobs = jobs.slice(start, end);
+      
+      const { jobs, totalItems, totalPages } = await service.getPaginatedJobs(limit, page);
 
       return res.status(STATUS_CODE.OK).json({
-        data: paginatedJobs,
+        data: jobs,
         page,
-        total_pages,
+        total_pages: totalPages,
         limit,
-        total_items: jobs.length
+        total_items: totalItems
       });
     }
     catch (err: any) {
