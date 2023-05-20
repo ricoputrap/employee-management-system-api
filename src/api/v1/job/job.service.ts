@@ -64,6 +64,7 @@ class JobService {
   // edit job
   public async editJob(id: string, title: string): Promise<TJob> {
     try {
+      // validate job exists
       const job: TJob | null = await this.repository.getJobById(id);
       if (job == null) {
         throw new CustomError(
